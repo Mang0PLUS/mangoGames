@@ -10,192 +10,108 @@
         
         /* --- THEME ENGINE (CSS Variables) --- */
         :root {
-            /* Default: Mango Dark */
             --bg-main: #12100e;
             --bg-sidebar: #1a1714;
             --bg-card: #24201c;
-            --accent-primary: #ff9100; /* Mango Orange */
+            --accent-primary: #ff9100; 
             --accent-hover: #ffaa33;
             --text-main: #ffffff;
             --text-muted: #a39b93;
             --border: #332d27;
             --shadow: rgba(0, 0, 0, 0.4);
+            --particle-color: #ff9100;
         }
 
-        body.theme-mango-light {
-            --bg-main: #fffaf0;
-            --bg-sidebar: #ffffff;
-            --bg-card: #ffffff;
-            --accent-primary: #ff8c00;
-            --accent-hover: #ff7300;
-            --text-main: #2b2b2b;
-            --text-muted: #7a7a7a;
-            --border: #f0e6d8;
-            --shadow: rgba(255, 140, 0, 0.15);
-        }
+        body.theme-mango-light { --bg-main: #fffaf0; --bg-sidebar: #ffffff; --bg-card: #ffffff; --accent-primary: #ff8c00; --text-main: #2b2b2b; --text-muted: #7a7a7a; --border: #f0e6d8; --shadow: rgba(255, 140, 0, 0.15); --particle-color: #ff8c00; }
+        body.theme-berry-dark { --bg-main: #0f0a14; --bg-sidebar: #160f1d; --bg-card: #1f1529; --accent-primary: #b700ff; --text-main: #ffffff; --text-muted: #968ba3; --border: #2c1f3a; --shadow: rgba(0, 0, 0, 0.4); --particle-color: #b700ff; }
+        body.theme-kiwi-light { --bg-main: #f4fbf4; --bg-sidebar: #ffffff; --bg-card: #ffffff; --accent-primary: #6cc24a; --text-main: #2b332b; --text-muted: #7a857a; --border: #e0eee0; --shadow: rgba(108, 194, 74, 0.15); --particle-color: #6cc24a; }
+        body.theme-watermelon-dark { --bg-main: #140a0a; --bg-sidebar: #1d0f0f; --bg-card: #291515; --accent-primary: #ff4d4d; --text-main: #ffffff; --text-muted: #a38b8b; --border: #3a1f1f; --shadow: rgba(0, 0, 0, 0.4); --particle-color: #ff4d4d; }
+        body.theme-blueberry-light { --bg-main: #f0f4ff; --bg-sidebar: #ffffff; --bg-card: #ffffff; --accent-primary: #4d79ff; --text-main: #2b2b33; --text-muted: #7a7a85; --border: #d8e0f0; --shadow: rgba(77, 121, 255, 0.15); --particle-color: #4d79ff; }
 
-        body.theme-berry-dark {
-            --bg-main: #0f0a14;
-            --bg-sidebar: #160f1d;
-            --bg-card: #1f1529;
-            --accent-primary: #b700ff; /* Berry Purple */
-            --accent-hover: #d24dff;
-            --text-main: #ffffff;
-            --text-muted: #968ba3;
-            --border: #2c1f3a;
-            --shadow: rgba(0, 0, 0, 0.4);
-        }
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; transition: 0.4s; }
 
-        body.theme-kiwi-light {
-            --bg-main: #f4fbf4;
-            --bg-sidebar: #ffffff;
-            --bg-card: #ffffff;
-            --accent-primary: #6cc24a; /* Kiwi Green */
-            --accent-hover: #5aa13e;
-            --text-main: #2b332b;
-            --text-muted: #7a857a;
-            --border: #e0eee0;
-            --shadow: rgba(108, 194, 74, 0.15);
-        }
+        /* Canvas Background */
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 
-        body { 
-            background-color: var(--bg-main); 
-            color: var(--text-main); 
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
-            transition: background-color 0.4s, color 0.4s;
-        }
+        /* Layout Structure */
+        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 30px 20px; z-index: 10; }
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; z-index: 10; position: relative; }
 
-        /* Layout */
-        .sidebar {
-            width: 260px;
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 30px 20px;
-            transition: all 0.4s;
-            z-index: 10;
-        }
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* Sidebar Elements */
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 40px;
-            letter-spacing: -1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* Sidebar UI */
+        .logo { font-size: 1.8rem; font-weight: 800; margin-bottom: 40px; display: flex; align-items: center; gap: 10px; }
         .logo span { color: var(--accent-primary); }
         .logo-icon { width: 30px; height: 30px; background-color: var(--accent-primary); border-radius: 8px; transform: rotate(15deg); }
         
         .nav-links { display: flex; flex-direction: column; gap: 10px; }
-        .nav-btn {
-            background: none; border: none;
-            color: var(--text-muted);
-            font-size: 1.05rem; font-weight: 600;
-            padding: 12px 20px; border-radius: 10px;
-            text-align: left; cursor: pointer;
-            transition: all 0.2s;
-            display: flex; align-items: center; gap: 12px;
-        }
-        .nav-btn:hover { background-color: var(--bg-main); color: var(--text-main); }
-        .nav-btn.active {
-            background-color: var(--accent-primary);
-            color: #fff; /* Always white text on active primary button */
-            box-shadow: 0 4px 15px var(--shadow);
-        }
+        .nav-btn { background: none; border: none; color: var(--text-muted); font-size: 1.05rem; font-weight: 600; padding: 12px 20px; border-radius: 10px; text-align: left; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 12px; }
+        .nav-btn:hover { background-color: var(--bg-card); color: var(--text-main); }
+        .nav-btn.active { background-color: var(--accent-primary); color: #fff; box-shadow: 0 4px 15px var(--shadow); }
 
         /* Top Bar */
-        .topbar {
-            padding: 20px 40px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-        .action-btn {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 8px 16px; border-radius: 8px;
-            font-size: 0.9rem; font-weight: 600; cursor: pointer;
-            transition: all 0.2s;
-        }
+        .topbar { padding: 20px 40px; display: flex; justify-content: flex-end; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); background: var(--bg-main); }
+        .action-btn { background-color: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); padding: 8px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .action-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
 
-        /* Tabs */
+        /* General Tab Styling */
         .tab-content { display: none; padding: 40px; overflow-y: auto; height: 100%; }
         .tab-content.active { display: block; animation: fadeUp 0.4s ease-out; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Typography */
         h2 { font-size: 2rem; margin-bottom: 25px; font-weight: 700; }
-        p { color: var(--text-muted); line-height: 1.6; }
+        h3 { font-size: 1.2rem; margin-bottom: 15px; }
 
-        /* Game Grid & Cards */
+        /* Games Tab (Grid Layout) */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            height: 280px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 30px var(--shadow);
-            border-color: var(--accent-primary);
-        }
-        .card h3 { font-size: 1.2rem; z-index: 2; margin-bottom: 5px; }
-        .card p { font-size: 0.85rem; z-index: 2; margin: 0; }
-        
-        /* Abstract card background shape */
-        .card::after {
-            content: ''; position: absolute; top: -20px; right: -20px;
-            width: 120px; height: 120px; border-radius: 50%;
-            background-color: var(--accent-primary); opacity: 0.1;
-            transition: transform 0.4s;
-        }
-        .card:hover::after { transform: scale(1.5); opacity: 0.2; }
+        .game-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; height: 250px; padding: 20px; display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer; position: relative; overflow: hidden; transition: 0.3s; }
+        .game-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px var(--shadow); border-color: var(--accent-primary); }
+        .game-card h4 { font-size: 1.2rem; z-index: 2; margin-bottom: 5px; }
+        .game-card::after { content: ''; position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; border-radius: 50%; background-color: var(--accent-primary); opacity: 0.1; transition: 0.4s; }
+        .game-card:hover::after { transform: scale(1.5); opacity: 0.2; }
 
-        /* Settings Tab Layout */
-        .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 15px; }
-        .theme-btn {
-            background-color: var(--bg-card); border: 2px solid var(--border);
-            color: var(--text-main); padding: 20px; border-radius: 12px;
-            font-weight: 600; cursor: pointer; transition: 0.2s;
-            display: flex; flex-direction: column; align-items: center; gap: 10px;
-        }
+        /* Apps Tab (List Layout) */
+        .app-list { display: flex; flex-direction: column; gap: 15px; }
+        .app-row { background-color: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; cursor: pointer; }
+        .app-row:hover { border-color: var(--accent-primary); background-color: var(--bg-sidebar); }
+
+        /* Settings Tab (Form Layout) */
+        .settings-section { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 25px; }
+        .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .theme-btn { background-color: var(--bg-main); border: 2px solid var(--border); color: var(--text-main); padding: 15px; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .theme-btn:hover, .theme-btn.active-theme { border-color: var(--accent-primary); }
         .color-preview { width: 30px; height: 30px; border-radius: 50%; }
 
+        /* Custom Theme Maker */
+        .custom-maker { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        .input-group label { font-size: 0.85rem; color: var(--text-muted); }
+        input[type="color"] { width: 50px; height: 40px; border: none; border-radius: 8px; cursor: pointer; background: none; }
+        select { padding: 10px; border-radius: 8px; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); }
+        .save-btn { background-color: var(--accent-primary); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        /* Game Modal Overlay */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 100; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-content { width: 80%; height: 80%; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--accent-primary); display: flex; flex-direction: column; overflow: hidden; position: relative; box-shadow: 0 0 50px var(--shadow); }
+        .modal-header { padding: 15px 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .close-btn { background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; }
+        .close-btn:hover { color: var(--accent-primary); }
+        #game-frame { width: 100%; height: 100%; border: none; background: #000; }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-main); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
     </style>
 </head>
 <body>
 
+    <!-- Dynamic Particles -->
+    <canvas id="particle-canvas"></canvas>
+
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">
-            <div class="logo-icon"></div>
-            Mango<span>PLUS</span>
+            <div class="logo-icon"></div> Mango<span>PLUS</span>
         </div>
         <nav class="nav-links">
             <button class="nav-btn active" onclick="switchTab('games', this)">🎮 Games</button>
@@ -206,113 +122,265 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Topbar -->
         <header class="topbar">
-            <button class="action-btn" onclick="cloakSite()">👻 Cloak Tab</button>
             <button class="action-btn">💬 Discord</button>
             <button class="action-btn" style="background-color: var(--accent-primary); color: #fff; border: none;">GitHub Login</button>
         </header>
 
-        <!-- GAMES TAB -->
+        <!-- GAMES TAB (Grid) -->
         <div id="games" class="tab-content active">
             <h2>Library</h2>
             <div class="grid">
-                <div class="card"><h3>Drift Boss</h3><p>Racing</p></div>
-                <div class="card"><h3>Geometry Dash</h3><p>Arcade</p></div>
-                <div class="card"><h3>Retro Bowl</h3><p>Sports</p></div>
-                <div class="card"><h3>Subway Surfers</h3><p>Endless Runner</p></div>
-                <div class="card"><h3>2048</h3><p>Puzzle</p></div>
-                <div class="card"><h3>Smash Karts</h3><p>Multiplayer</p></div>
+                <!-- Data-url holds the link that will open in the pop-up -->
+                <div class="game-card" onclick="openGame('https://example.com/drift')">
+                    <h4>Drift Boss</h4><p style="color: var(--text-muted)">Racing</p>
+                </div>
+                <div class="game-card" onclick="openGame('https://example.com/geo')">
+                    <h4>Geometry Dash</h4><p style="color: var(--text-muted)">Arcade</p>
+                </div>
+                <div class="game-card" onclick="openGame('https://example.com/retro')">
+                    <h4>Retro Bowl</h4><p style="color: var(--text-muted)">Sports</p>
+                </div>
             </div>
         </div>
 
-        <!-- APPS TAB -->
+        <!-- APPS TAB (List) -->
         <div id="apps" class="tab-content">
             <h2>Utilities</h2>
-            <div class="grid">
-                <div class="card"><h3>Web Browser</h3><p>Surf freely</p></div>
-                <div class="card"><h3>Math Tools</h3><p>Calculators & Graphs</p></div>
+            <div class="app-list">
+                <div class="app-row" onclick="openGame('https://example.com/proxy1')">
+                    <div>
+                        <h4>Incognito Browser</h4>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Surf freely and privately.</p>
+                    </div>
+                    <button class="action-btn">Launch</button>
+                </div>
+                <div class="app-row" onclick="openGame('https://example.com/calc')">
+                    <div>
+                        <h4>Desmos Graphing</h4>
+                        <p style="color: var(--text-muted); font-size: 0.85rem;">Advanced math tools.</p>
+                    </div>
+                    <button class="action-btn">Launch</button>
+                </div>
             </div>
         </div>
 
-        <!-- SETTINGS TAB (Theming) -->
+        <!-- SETTINGS TAB (Forms & Actions) -->
         <div id="settings" class="tab-content">
-            <h2>Appearance</h2>
-            <p>Customize the flavor of your dashboard.</p>
+            <h2>Settings</h2>
             
-            <div class="theme-grid">
-                <button class="theme-btn" onclick="setTheme('theme-mango-dark', this)">
-                    <div class="color-preview" style="background: #ff9100;"></div> Mango Dark
-                </button>
-                <button class="theme-btn" onclick="setTheme('theme-mango-light', this)">
-                    <div class="color-preview" style="background: #ff8c00;"></div> Mango Light
-                </button>
-                <button class="theme-btn" onclick="setTheme('theme-berry-dark', this)">
-                    <div class="color-preview" style="background: #b700ff;"></div> Berry Dark
-                </button>
-                <button class="theme-btn" onclick="setTheme('theme-kiwi-light', this)">
-                    <div class="color-preview" style="background: #6cc24a;"></div> Kiwi Light
-                </button>
+            <div class="settings-section">
+                <h3>Privacy Actions</h3>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Hide your activity by cloaking this tab.</p>
+                <button class="action-btn" onclick="cloakSite()" style="border-color: var(--accent-primary);">👻 Activate Cloak Tab</button>
+            </div>
+
+            <div class="settings-section">
+                <h3>Preset Themes</h3>
+                <div class="theme-grid">
+                    <button class="theme-btn" onclick="setPresetTheme('theme-mango-dark', this)"><div class="color-preview" style="background: #ff9100;"></div> Mango</button>
+                    <button class="theme-btn" onclick="setPresetTheme('theme-watermelon-dark', this)"><div class="color-preview" style="background: #ff4d4d;"></div> Watermelon</button>
+                    <button class="theme-btn" onclick="setPresetTheme('theme-berry-dark', this)"><div class="color-preview" style="background: #b700ff;"></div> Berry</button>
+                    <button class="theme-btn" onclick="setPresetTheme('theme-blueberry-light', this)"><div class="color-preview" style="background: #4d79ff;"></div> Blueberry</button>
+                    <button class="theme-btn" onclick="setPresetTheme('theme-kiwi-light', this)"><div class="color-preview" style="background: #6cc24a;"></div> Kiwi</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>Custom Theme Maker</h3>
+                <div class="custom-maker">
+                    <div class="input-group">
+                        <label>Main Background</label>
+                        <input type="color" id="custom-bg" value="#12100e">
+                    </div>
+                    <div class="input-group">
+                        <label>Accent & Particles</label>
+                        <input type="color" id="custom-accent" value="#ff9100">
+                    </div>
+                    <div class="input-group">
+                        <label>Particle Style</label>
+                        <select id="particle-style">
+                            <option value="lines">Connected Lines</option>
+                            <option value="dots">Floating Dots</option>
+                            <option value="none">Disabled</option>
+                        </select>
+                    </div>
+                    <button class="save-btn" onclick="applyCustomTheme()">Apply Custom Theme</button>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- JavaScript Logic -->
+    <!-- Game Pop-up Modal -->
+    <div class="modal-overlay" id="game-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title" style="margin:0;">Now Playing</h3>
+                <button class="close-btn" onclick="closeGame()">✖</button>
+            </div>
+            <iframe id="game-frame" src=""></iframe>
+        </div>
+    </div>
+
+    <!-- JavaScript Engine -->
     <script>
-        // --- 1. Tab Switching Logic ---
+        // --- 1. Tab Switching ---
         function switchTab(tabId, btnElement) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            // Remove active state from all buttons
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // Show selected tab and highlight button
             document.getElementById(tabId).classList.add('active');
             btnElement.classList.add('active');
         }
 
-        // --- 2. Theme Engine Logic ---
-        function setTheme(themeName, btnElement) {
-            // Remove all possible theme classes from the body
+        // --- 2. Game Modal Logic ---
+        function openGame(url) {
+            const modal = document.getElementById('game-modal');
+            const frame = document.getElementById('game-frame');
+            frame.src = url; // Load the game
+            modal.classList.add('show');
+        }
+        function closeGame() {
+            const modal = document.getElementById('game-modal');
+            const frame = document.getElementById('game-frame');
+            modal.classList.remove('show');
+            setTimeout(() => { frame.src = ""; }, 300); // Clear memory after fade out
+        }
+
+        // --- 3. Theme Engine ---
+        let currentParticleStyle = localStorage.getItem('particle-style') || 'lines';
+
+        function setPresetTheme(themeName, btnElement) {
             document.body.className = ''; 
+            document.body.removeAttribute('style'); // Clear custom styles
+            if (themeName !== 'theme-mango-dark') document.body.classList.add(themeName);
             
-            // Add the new theme class (if it's not the default Mango Dark)
-            if (themeName !== 'theme-mango-dark') {
-                document.body.classList.add(themeName);
-            }
-            
-            // Save preference to browser storage so it remembers on refresh
+            localStorage.setItem('theme-type', 'preset');
             localStorage.setItem('mangoplus-theme', themeName);
 
-            // Update button styles
             document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active-theme'));
             if(btnElement) btnElement.classList.add('active-theme');
         }
 
-        // Check for saved theme on page load
-        window.onload = () => {
-            const savedTheme = localStorage.getItem('mangoplus-theme') || 'theme-mango-dark';
-            setTheme(savedTheme, null); // Apply it
+        function applyCustomTheme() {
+            const bg = document.getElementById('custom-bg').value;
+            const accent = document.getElementById('custom-accent').value;
+            currentParticleStyle = document.getElementById('particle-style').value;
+
+            document.body.className = ''; // Remove preset classes
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active-theme'));
+
+            // Override CSS variables locally
+            document.body.style.setProperty('--bg-main', bg);
+            document.body.style.setProperty('--bg-sidebar', adjustColor(bg, 10)); // Slightly lighter
+            document.body.style.setProperty('--bg-card', adjustColor(bg, 20));
+            document.body.style.setProperty('--accent-primary', accent);
+            document.body.style.setProperty('--particle-color', accent);
             
-            // Highlight the correct settings button visually
-            const buttons = document.querySelectorAll('.theme-btn');
-            buttons.forEach(btn => {
-                if(btn.getAttribute('onclick').includes(savedTheme)) {
-                    btn.classList.add('active-theme');
-                }
-            });
+            // Save to local storage
+            localStorage.setItem('theme-type', 'custom');
+            localStorage.setItem('custom-bg', bg);
+            localStorage.setItem('custom-accent', accent);
+            localStorage.setItem('particle-style', currentParticleStyle);
+        }
+
+        // Helper to lighten/darken hex colors for sidebar/cards
+        function adjustColor(color, amount) {
+            return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+        }
+
+        // Load themes on startup
+        window.onload = () => {
+            const type = localStorage.getItem('theme-type');
+            if (type === 'custom') {
+                document.getElementById('custom-bg').value = localStorage.getItem('custom-bg');
+                document.getElementById('custom-accent').value = localStorage.getItem('custom-accent');
+                document.getElementById('particle-style').value = currentParticleStyle;
+                applyCustomTheme();
+            } else {
+                const savedTheme = localStorage.getItem('mangoplus-theme') || 'theme-mango-dark';
+                setPresetTheme(savedTheme, null);
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    if(btn.getAttribute('onclick').includes(savedTheme)) btn.classList.add('active-theme');
+                });
+            }
         };
 
-        // --- 3. Cloaking Logic (Retained from previous version) ---
+        // --- 4. Cloaking Script ---
         function cloakSite() {
             let win = window.open('about:blank', '_blank');
-            if (!win) { alert("Popup blocker is on! Allow popups to use the cloaker."); return; }
-            let doc = win.document;
-            doc.write('<title>Google Drive</title><link rel="icon" href="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png">');
-            doc.write('<body style="margin:0;padding:0;overflow:hidden;"><iframe src="' + window.location.href + '" style="width:100%;height:100%;border:none;"></iframe></body>');
-            doc.close();
+            if (!win) { alert("Popup blocker is on! Allow popups."); return; }
+            win.document.write('<title>Google Drive</title><link rel="icon" href="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png"><body style="margin:0;overflow:hidden;"><iframe src="' + window.location.href + '" style="width:100%;height:100%;border:none;"></iframe></body>');
+            win.document.close();
             window.location.replace('https://classroom.google.com'); 
         }
+
+        // --- 5. Custom Particle Engine ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = (Math.random() * 1) - 0.5;
+                this.speedY = (Math.random() * 1) - 0.5;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+            }
+            draw(colorStr) {
+                ctx.fillStyle = colorStr;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 50; i++) particles.push(new Particle());
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (currentParticleStyle !== 'none') {
+                // Get current particle color from CSS variables
+                const rawColor = getComputedStyle(document.body).getPropertyValue('--particle-color').trim() || '#ff9100';
+                
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw(rawColor);
+                    
+                    if (currentParticleStyle === 'lines') {
+                        for (let j = i; j < particles.length; j++) {
+                            const dx = particles[i].x - particles[j].x;
+                            const dy = particles[i].y - particles[j].y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            if (distance < 120) {
+                                ctx.beginPath();
+                                ctx.strokeStyle = rawColor;
+                                ctx.globalAlpha = 1 - (distance / 120);
+                                ctx.lineWidth = 0.5;
+                                ctx.moveTo(particles[i].x, particles[i].y);
+                                ctx.lineTo(particles[j].x, particles[j].y);
+                                ctx.stroke();
+                                ctx.globalAlpha = 1.0; // reset
+                            }
+                        }
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
