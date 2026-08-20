@@ -87,13 +87,18 @@
         select { padding: 10px; border-radius: 8px; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main); }
         .save-btn { background-color: var(--accent-primary); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* Game Modal Overlay */
+        /* Game Modal Overlay & Controls */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 100; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.show { display: flex; opacity: 1; }
-        .modal-content { width: 80%; height: 80%; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--accent-primary); display: flex; flex-direction: column; overflow: hidden; position: relative; box-shadow: 0 0 50px var(--shadow); }
-        .modal-header { padding: 15px 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .close-btn { background: none; border: none; color: var(--text-main); font-size: 1.5rem; cursor: pointer; }
-        .close-btn:hover { color: var(--accent-primary); }
+        .modal-content { width: 85%; height: 85%; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--accent-primary); display: flex; flex-direction: column; overflow: hidden; position: relative; box-shadow: 0 0 50px var(--shadow); }
+        .modal-header { padding: 12px 20px; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        
+        .modal-controls { display: flex; gap: 12px; align-items: center; }
+        .control-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .control-btn:hover { color: var(--accent-primary); border-color: var(--accent-primary); }
+        .close-btn { background: #ff4d4d; color: white; border: none; font-size: 1.1rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .close-btn:hover { background: #ff1a1a; }
+        
         #game-frame { width: 100%; height: 100%; border: none; background: #000; }
 
         /* Scrollbars */
@@ -127,35 +132,34 @@
             <button class="action-btn" style="background-color: var(--accent-primary); color: #fff; border: none;">GitHub Login</button>
         </header>
 
-        <!-- GAMES TAB (Grid) -->
+        <!-- GAMES TAB -->
         <div id="games" class="tab-content active">
             <h2>Library</h2>
             <div class="grid">
-                <!-- Data-url holds the link that will open in the pop-up -->
-                <div class="game-card" onclick="openGame('https://example.com/drift')">
+                <div class="game-card" onclick="openGame('https://example.com/drift', 'Drift Boss')">
                     <h4>Drift Boss</h4><p style="color: var(--text-muted)">Racing</p>
                 </div>
-                <div class="game-card" onclick="openGame('https://example.com/geo')">
+                <div class="game-card" onclick="openGame('https://example.com/geo', 'Geometry Dash')">
                     <h4>Geometry Dash</h4><p style="color: var(--text-muted)">Arcade</p>
                 </div>
-                <div class="game-card" onclick="openGame('https://example.com/retro')">
+                <div class="game-card" onclick="openGame('https://example.com/retro', 'Retro Bowl')">
                     <h4>Retro Bowl</h4><p style="color: var(--text-muted)">Sports</p>
                 </div>
             </div>
         </div>
 
-        <!-- APPS TAB (List) -->
+        <!-- APPS TAB -->
         <div id="apps" class="tab-content">
             <h2>Utilities</h2>
             <div class="app-list">
-                <div class="app-row" onclick="openGame('https://example.com/proxy1')">
+                <div class="app-row" onclick="openGame('https://example.com/proxy1', 'Incognito Browser')">
                     <div>
                         <h4>Incognito Browser</h4>
                         <p style="color: var(--text-muted); font-size: 0.85rem;">Surf freely and privately.</p>
                     </div>
                     <button class="action-btn">Launch</button>
                 </div>
-                <div class="app-row" onclick="openGame('https://example.com/calc')">
+                <div class="app-row" onclick="openGame('https://example.com/calc', 'Desmos Graphing')">
                     <div>
                         <h4>Desmos Graphing</h4>
                         <p style="color: var(--text-muted); font-size: 0.85rem;">Advanced math tools.</p>
@@ -165,14 +169,14 @@
             </div>
         </div>
 
-        <!-- SETTINGS TAB (Forms & Actions) -->
+        <!-- SETTINGS TAB -->
         <div id="settings" class="tab-content">
             <h2>Settings</h2>
             
             <div class="settings-section">
                 <h3>Privacy Actions</h3>
-                <p style="color: var(--text-muted); margin-bottom: 15px;">Hide your activity by cloaking this tab.</p>
-                <button class="action-btn" onclick="cloakSite()" style="border-color: var(--accent-primary);">👻 Activate Cloak Tab</button>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Hide your activity by cloaking the entire dashboard.</p>
+                <button class="action-btn" onclick="cloakSite()" style="border-color: var(--accent-primary);">👻 Cloak Dashboard</button>
             </div>
 
             <div class="settings-section">
@@ -211,12 +215,17 @@
         </div>
     </main>
 
-    <!-- Game Pop-up Modal -->
+    <!-- Game Pop-up Modal with New Controls -->
     <div class="modal-overlay" id="game-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modal-title" style="margin:0;">Now Playing</h3>
-                <button class="close-btn" onclick="closeGame()">✖</button>
+                <h3 id="modal-title" style="margin:0; font-size: 1.1rem;">Now Playing</h3>
+                <div class="modal-controls">
+                    <button class="control-btn" onclick="refreshGame()" title="Refresh Game">🔄</button>
+                    <button class="control-btn" onclick="fullscreenGame()" title="Full Screen">⛶</button>
+                    <button class="control-btn" onclick="cloakGame()" title="Open Game in about:blank">👻</button>
+                    <button class="close-btn" onclick="closeGame()" title="Close Game">✖</button>
+                </div>
             </div>
             <iframe id="game-frame" src=""></iframe>
         </div>
@@ -232,18 +241,53 @@
             btnElement.classList.add('active');
         }
 
-        // --- 2. Game Modal Logic ---
-        function openGame(url) {
+        // --- 2. Game Modal & Controls Logic ---
+        function openGame(url, title) {
             const modal = document.getElementById('game-modal');
             const frame = document.getElementById('game-frame');
-            frame.src = url; // Load the game
+            document.getElementById('modal-title').innerText = title || "Now Playing";
+            frame.src = url; 
             modal.classList.add('show');
         }
+
         function closeGame() {
             const modal = document.getElementById('game-modal');
             const frame = document.getElementById('game-frame');
             modal.classList.remove('show');
-            setTimeout(() => { frame.src = ""; }, 300); // Clear memory after fade out
+            setTimeout(() => { frame.src = ""; }, 300); // Clear memory
+        }
+
+        function refreshGame() {
+            const frame = document.getElementById('game-frame');
+            frame.src = frame.src; // Reloads the iframe
+        }
+
+        function fullscreenGame() {
+            const frame = document.getElementById('game-frame');
+            if (frame.requestFullscreen) {
+                frame.requestFullscreen();
+            } else if (frame.webkitRequestFullscreen) { /* Safari */
+                frame.webkitRequestFullscreen();
+            } else if (frame.msRequestFullscreen) { /* IE11 */
+                frame.msRequestFullscreen();
+            }
+        }
+
+        function cloakGame() {
+            const frame = document.getElementById('game-frame');
+            const gameUrl = frame.src;
+            if(!gameUrl) return;
+
+            let win = window.open('about:blank', '_blank');
+            if (!win) { alert("Popup blocker is on! Allow popups to use the cloaker."); return; }
+            
+            // Sets up the disguised tab and embeds just the game URL
+            win.document.write('<title>Google Drive</title><link rel="icon" href="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png">');
+            win.document.write('<body style="margin:0;padding:0;overflow:hidden;"><iframe src="' + gameUrl + '" style="width:100%;height:100%;border:none;"></iframe></body>');
+            win.document.close();
+            
+            // Close the modal on the main dashboard since it's playing in the new tab
+            closeGame(); 
         }
 
         // --- 3. Theme Engine ---
@@ -251,7 +295,7 @@
 
         function setPresetTheme(themeName, btnElement) {
             document.body.className = ''; 
-            document.body.removeAttribute('style'); // Clear custom styles
+            document.body.removeAttribute('style'); 
             if (themeName !== 'theme-mango-dark') document.body.classList.add(themeName);
             
             localStorage.setItem('theme-type', 'preset');
@@ -266,29 +310,25 @@
             const accent = document.getElementById('custom-accent').value;
             currentParticleStyle = document.getElementById('particle-style').value;
 
-            document.body.className = ''; // Remove preset classes
+            document.body.className = ''; 
             document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active-theme'));
 
-            // Override CSS variables locally
             document.body.style.setProperty('--bg-main', bg);
-            document.body.style.setProperty('--bg-sidebar', adjustColor(bg, 10)); // Slightly lighter
+            document.body.style.setProperty('--bg-sidebar', adjustColor(bg, 10));
             document.body.style.setProperty('--bg-card', adjustColor(bg, 20));
             document.body.style.setProperty('--accent-primary', accent);
             document.body.style.setProperty('--particle-color', accent);
             
-            // Save to local storage
             localStorage.setItem('theme-type', 'custom');
             localStorage.setItem('custom-bg', bg);
             localStorage.setItem('custom-accent', accent);
             localStorage.setItem('particle-style', currentParticleStyle);
         }
 
-        // Helper to lighten/darken hex colors for sidebar/cards
         function adjustColor(color, amount) {
             return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
         }
 
-        // Load themes on startup
         window.onload = () => {
             const type = localStorage.getItem('theme-type');
             if (type === 'custom') {
@@ -305,7 +345,7 @@
             }
         };
 
-        // --- 4. Cloaking Script ---
+        // --- 4. Main Dashboard Cloaking Script ---
         function cloakSite() {
             let win = window.open('about:blank', '_blank');
             if (!win) { alert("Popup blocker is on! Allow popups."); return; }
@@ -347,7 +387,6 @@
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             if (currentParticleStyle !== 'none') {
-                // Get current particle color from CSS variables
                 const rawColor = getComputedStyle(document.body).getPropertyValue('--particle-color').trim() || '#ff9100';
                 
                 for (let i = 0; i < particles.length; i++) {
@@ -367,7 +406,7 @@
                                 ctx.moveTo(particles[i].x, particles[i].y);
                                 ctx.lineTo(particles[j].x, particles[j].y);
                                 ctx.stroke();
-                                ctx.globalAlpha = 1.0; // reset
+                                ctx.globalAlpha = 1.0;
                             }
                         }
                     }
