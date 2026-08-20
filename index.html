@@ -3,226 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>MangoPLUS | Dashboard</title>
     <style>
-        /* Cyberpunk Base Reset */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
-        body { background-color: #050505; color: #00ffcc; overflow: hidden; height: 100vh; display: flex; }
+        /* Base Reset & Fonts */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* Starfield Canvas */
-        #space-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        /* --- THEME ENGINE (CSS Variables) --- */
+        :root {
+            /* Default: Mango Dark */
+            --bg-main: #12100e;
+            --bg-sidebar: #1a1714;
+            --bg-card: #24201c;
+            --accent-primary: #ff9100; /* Mango Orange */
+            --accent-hover: #ffaa33;
+            --text-main: #ffffff;
+            --text-muted: #a39b93;
+            --border: #332d27;
+            --shadow: rgba(0, 0, 0, 0.4);
+        }
 
-        /* Sidebar */
-        .sidebar { width: 80px; background: rgba(10, 10, 15, 0.8); border-right: 1px solid #ff00ff; display: flex; flex-direction: column; align-items: center; padding: 20px 0; backdrop-filter: blur(10px); transition: width 0.3s; z-index: 10;}
-        .sidebar:hover { width: 200px; }
-        .sidebar:hover .nav-text { display: inline-block; }
-        .nav-btn { background: none; border: none; color: #00ffcc; font-size: 1.5rem; margin: 15px 0; cursor: pointer; display: flex; align-items: center; gap: 15px; width: 100%; padding: 10px 20px; transition: 0.3s; }
-        .nav-btn:hover, .nav-btn.active { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; border-left: 3px solid #ff00ff; }
-        .nav-text { display: none; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; }
+        body.theme-mango-light {
+            --bg-main: #fffaf0;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --accent-primary: #ff8c00;
+            --accent-hover: #ff7300;
+            --text-main: #2b2b2b;
+            --text-muted: #7a7a7a;
+            --border: #f0e6d8;
+            --shadow: rgba(255, 140, 0, 0.15);
+        }
 
-        /* Main Content */
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100%; }
+        body.theme-berry-dark {
+            --bg-main: #0f0a14;
+            --bg-sidebar: #160f1d;
+            --bg-card: #1f1529;
+            --accent-primary: #b700ff; /* Berry Purple */
+            --accent-hover: #d24dff;
+            --text-main: #ffffff;
+            --text-muted: #968ba3;
+            --border: #2c1f3a;
+            --shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        body.theme-kiwi-light {
+            --bg-main: #f4fbf4;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --accent-primary: #6cc24a; /* Kiwi Green */
+            --accent-hover: #5aa13e;
+            --text-main: #2b332b;
+            --text-muted: #7a857a;
+            --border: #e0eee0;
+            --shadow: rgba(108, 194, 74, 0.15);
+        }
+
+        body { 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+            transition: background-color 0.4s, color 0.4s;
+        }
+
+        /* Layout */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            transition: all 0.4s;
+            z-index: 10;
+        }
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Sidebar Elements */
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 40px;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo span { color: var(--accent-primary); }
+        .logo-icon { width: 30px; height: 30px; background-color: var(--accent-primary); border-radius: 8px; transform: rotate(15deg); }
+        
+        .nav-links { display: flex; flex-direction: column; gap: 10px; }
+        .nav-btn {
+            background: none; border: none;
+            color: var(--text-muted);
+            font-size: 1.05rem; font-weight: 600;
+            padding: 12px 20px; border-radius: 10px;
+            text-align: left; cursor: pointer;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .nav-btn:hover { background-color: var(--bg-main); color: var(--text-main); }
+        .nav-btn.active {
+            background-color: var(--accent-primary);
+            color: #fff; /* Always white text on active primary button */
+            box-shadow: 0 4px 15px var(--shadow);
+        }
 
         /* Top Bar */
-        .top-bar { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); z-index: 10; }
-        .title-glow { font-size: 2rem; font-weight: 900; color: transparent; -webkit-text-stroke: 1px #00ffcc; text-shadow: 0 0 15px rgba(0,255,204,0.5); letter-spacing: 5px; }
-        
-        /* Action Buttons */
-        .actions { display: flex; gap: 15px; }
-        .btn { padding: 10px 20px; border: 1px solid; border-radius: 4px; background: rgba(0,0,0,0.5); cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; backdrop-filter: blur(5px); }
-        .btn-cloak { color: #ffff00; border-color: #ffff00; }
-        .btn-cloak:hover { background: #ffff00; color: #000; box-shadow: 0 0 15px #ffff00; }
-        .btn-discord { color: #7289da; border-color: #7289da; }
-        .btn-discord:hover { background: #7289da; color: #fff; box-shadow: 0 0 15px #7289da; }
-        .btn-github { color: #fff; border-color: #fff; }
-        .btn-github:hover { background: #fff; color: #000; box-shadow: 0 0 15px #fff; }
+        .topbar {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        .action-btn {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 16px; border-radius: 8px;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
 
-        /* Tab Content */
+        /* Tabs */
         .tab-content { display: none; padding: 40px; overflow-y: auto; height: 100%; }
-        .tab-content.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content.active { display: block; animation: fadeUp 0.4s ease-out; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Grid System */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
-        .card { height: 250px; background: rgba(0, 0, 0, 0.6); border: 1px solid #00ffcc; position: relative; overflow: hidden; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; text-align: center;}
-        .card::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,0,255,0.2), transparent); transform: rotate(45deg); transition: 0.5s; }
-        .card:hover { transform: scale(1.05) translateY(-10px); box-shadow: 0 0 20px rgba(0,255,204,0.4); border-color: #ff00ff; }
-        .card:hover::before { left: 100%; }
-        .card h3 { z-index: 1; color: #fff; text-shadow: 2px 2px 0px #ff00ff; font-size: 1.5rem; letter-spacing: 1px; }
+        /* Typography */
+        h2 { font-size: 2rem; margin-bottom: 25px; font-weight: 700; }
+        p { color: var(--text-muted); line-height: 1.6; }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #00ffcc; }
+        /* Game Grid & Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            height: 280px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px var(--shadow);
+            border-color: var(--accent-primary);
+        }
+        .card h3 { font-size: 1.2rem; z-index: 2; margin-bottom: 5px; }
+        .card p { font-size: 0.85rem; z-index: 2; margin: 0; }
+        
+        /* Abstract card background shape */
+        .card::after {
+            content: ''; position: absolute; top: -20px; right: -20px;
+            width: 120px; height: 120px; border-radius: 50%;
+            background-color: var(--accent-primary); opacity: 0.1;
+            transition: transform 0.4s;
+        }
+        .card:hover::after { transform: scale(1.5); opacity: 0.2; }
+
+        /* Settings Tab Layout */
+        .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 15px; }
+        .theme-btn {
+            background-color: var(--bg-card); border: 2px solid var(--border);
+            color: var(--text-main); padding: 20px; border-radius: 12px;
+            font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .theme-btn:hover, .theme-btn.active-theme { border-color: var(--accent-primary); }
+        .color-preview { width: 30px; height: 30px; border-radius: 50%; }
+
     </style>
 </head>
 <body>
 
-<!-- Warp Speed Canvas -->
-<canvas id="space-canvas"></canvas>
-
-<!-- Sidebar Navigation -->
-<div class="sidebar">
-    <button class="nav-btn active" onclick="switchTab('games')">
-        <span>🎮</span><span class="nav-text">Games</span>
-    </button>
-    <button class="nav-btn" onclick="switchTab('apps')">
-        <span>📱</span><span class="nav-text">Apps</span>
-    </button>
-    <button class="nav-btn" onclick="switchTab('store')">
-        <span>🛒</span><span class="nav-text">Store</span>
-    </button>
-</div>
-
-<!-- Main App Area -->
-<div class="main-content">
-    
-    <!-- Topbar with Actions -->
-    <div class="top-bar">
-        <div class="title-glow">NEON_NEXUS</div>
-        <div class="actions">
-            <button class="btn btn-cloak" onclick="cloakSite()">👻 Cloak</button>
-            <a href="https://discord.gg/your-invite-link" target="_blank" class="btn btn-discord">💬 Discord</a>
-            <button class="btn btn-github" onclick="githubLogin()" id="login-btn">GitHub Login</button>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            Mango<span>PLUS</span>
         </div>
-    </div>
+        <nav class="nav-links">
+            <button class="nav-btn active" onclick="switchTab('games', this)">🎮 Games</button>
+            <button class="nav-btn" onclick="switchTab('apps', this)">📱 Apps</button>
+            <button class="nav-btn" onclick="switchTab('settings', this)">⚙️ Settings</button>
+        </nav>
+    </aside>
 
-    <!-- Games Tab -->
-    <div id="games" class="tab-content active">
-        <h2 style="margin-bottom: 20px; color: #ff00ff;">> AVAILABLE_GAMES</h2>
-        <div class="grid">
-            <div class="card"><h3>Retro Drift</h3></div>
-            <div class="card"><h3>Cyber Jump</h3></div>
-            <div class="card"><h3>Neon Shooter</h3></div>
-            <div class="card"><h3>Grid Runner</h3></div>
-            <div class="card"><h3>Pixel Smash</h3></div>
-            <div class="card"><h3>Void Surfer</h3></div>
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <button class="action-btn" onclick="cloakSite()">👻 Cloak Tab</button>
+            <button class="action-btn">💬 Discord</button>
+            <button class="action-btn" style="background-color: var(--accent-primary); color: #fff; border: none;">GitHub Login</button>
+        </header>
+
+        <!-- GAMES TAB -->
+        <div id="games" class="tab-content active">
+            <h2>Library</h2>
+            <div class="grid">
+                <div class="card"><h3>Drift Boss</h3><p>Racing</p></div>
+                <div class="card"><h3>Geometry Dash</h3><p>Arcade</p></div>
+                <div class="card"><h3>Retro Bowl</h3><p>Sports</p></div>
+                <div class="card"><h3>Subway Surfers</h3><p>Endless Runner</p></div>
+                <div class="card"><h3>2048</h3><p>Puzzle</p></div>
+                <div class="card"><h3>Smash Karts</h3><p>Multiplayer</p></div>
+            </div>
         </div>
-    </div>
 
-    <!-- Apps Tab -->
-    <div id="apps" class="tab-content">
-        <h2 style="margin-bottom: 20px; color: #ff00ff;">> UTILITIES</h2>
-        <div class="grid">
-            <div class="card"><h3>Proxy 1</h3></div>
-            <div class="card"><h3>Proxy 2</h3></div>
-            <div class="card"><h3>Dev Tools</h3></div>
+        <!-- APPS TAB -->
+        <div id="apps" class="tab-content">
+            <h2>Utilities</h2>
+            <div class="grid">
+                <div class="card"><h3>Web Browser</h3><p>Surf freely</p></div>
+                <div class="card"><h3>Math Tools</h3><p>Calculators & Graphs</p></div>
+            </div>
         </div>
-    </div>
 
-    <!-- Store Tab -->
-    <div id="store" class="tab-content">
-        <h2 style="margin-bottom: 20px; color: #ff00ff;">> THE_STORE</h2>
-        <p>Unlock custom cursors, background themes, and exclusive titles here.</p>
-    </div>
-
-</div>
-
-<!-- Firebase Scripts for GitHub Login -->
-<script type="module">
-    // IMPORT FIREBASE (You need to create a free Firebase project and paste your config here)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithPopup, GithubAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
-    /* --- PASTE YOUR FIREBASE CONFIG HERE --- 
-    const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GithubAuthProvider();
-    ----------------------------------------- */
-
-    // Global login function
-    window.githubLogin = function() {
-        alert("To make this work, follow the Firebase setup instructions in the code!");
-        /* UNCOMMENT THIS ONCE FIREBASE IS SETUP
-        signInWithPopup(auth, provider).then((result) => {
-            const user = result.user;
-            document.getElementById('login-btn').innerText = `Welcome, ${user.displayName}`;
-        }).catch((error) => {
-            console.error("Login failed:", error);
-        });
-        */
-    };
-</script>
-
-<!-- UI & Cloaking Logic -->
-<script>
-    // Tab Switching
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
-
-    // About:Blank Cloaking
-    function cloakSite() {
-        let win = window.open('about:blank', '_blank');
-        if (!win) {
-            alert("Popup blocker is on! Allow popups to use the cloaker.");
-            return;
-        }
-        let doc = win.document;
-        // Make it look like Google Drive in the tab
-        doc.write('<title>Google Drive</title><link rel="icon" href="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png">');
-        // Embed the current site seamlessly
-        doc.write('<body style="margin:0;padding:0;overflow:hidden;"><iframe src="' + window.location.href + '" style="width:100%;height:100%;border:none;"></iframe></body>');
-        doc.close();
-        // Redirect the original tab to something innocent
-        window.location.replace('https://classroom.google.com'); 
-    }
-
-    // Custom Warp Speed Canvas Background (No External Dependencies)
-    const canvas = document.getElementById('space-canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let stars = [];
-    for(let i=0; i<400; i++) {
-        stars.push({
-            x: Math.random() * canvas.width - canvas.width/2,
-            y: Math.random() * canvas.height - canvas.height/2,
-            z: Math.random() * 2000
-        });
-    }
-
-    function animateStars() {
-        ctx.fillStyle = 'rgba(5, 5, 5, 0.3)'; // Creates motion blur trail
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        ctx.translate(canvas.width/2, canvas.height/2);
-        for(let i=0; i<stars.length; i++) {
-            let star = stars[i];
-            star.z -= 10; // Speed of warp
-            if(star.z <= 0) {
-                star.z = 2000;
-                star.x = Math.random() * canvas.width - canvas.width/2;
-                star.y = Math.random() * canvas.height - canvas.height/2;
-            }
-            let x = (star.x / star.z) * 1000;
-            let y = (star.y / star.z) * 1000;
-            let size = (1 - star.z / 2000) * 3;
+        <!-- SETTINGS TAB (Theming) -->
+        <div id="settings" class="tab-content">
+            <h2>Appearance</h2>
+            <p>Customize the flavor of your dashboard.</p>
             
-            ctx.fillStyle = '#00ffcc';
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI*2);
-            ctx.fill();
+            <div class="theme-grid">
+                <button class="theme-btn" onclick="setTheme('theme-mango-dark', this)">
+                    <div class="color-preview" style="background: #ff9100;"></div> Mango Dark
+                </button>
+                <button class="theme-btn" onclick="setTheme('theme-mango-light', this)">
+                    <div class="color-preview" style="background: #ff8c00;"></div> Mango Light
+                </button>
+                <button class="theme-btn" onclick="setTheme('theme-berry-dark', this)">
+                    <div class="color-preview" style="background: #b700ff;"></div> Berry Dark
+                </button>
+                <button class="theme-btn" onclick="setTheme('theme-kiwi-light', this)">
+                    <div class="color-preview" style="background: #6cc24a;"></div> Kiwi Light
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- 1. Tab Switching Logic ---
+        function switchTab(tabId, btnElement) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            // Remove active state from all buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab and highlight button
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
         }
-        ctx.translate(-canvas.width/2, -canvas.height/2);
-        requestAnimationFrame(animateStars);
-    }
-    animateStars();
 
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
-</script>
+        // --- 2. Theme Engine Logic ---
+        function setTheme(themeName, btnElement) {
+            // Remove all possible theme classes from the body
+            document.body.className = ''; 
+            
+            // Add the new theme class (if it's not the default Mango Dark)
+            if (themeName !== 'theme-mango-dark') {
+                document.body.classList.add(themeName);
+            }
+            
+            // Save preference to browser storage so it remembers on refresh
+            localStorage.setItem('mangoplus-theme', themeName);
 
+            // Update button styles
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active-theme'));
+            if(btnElement) btnElement.classList.add('active-theme');
+        }
+
+        // Check for saved theme on page load
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('mangoplus-theme') || 'theme-mango-dark';
+            setTheme(savedTheme, null); // Apply it
+            
+            // Highlight the correct settings button visually
+            const buttons = document.querySelectorAll('.theme-btn');
+            buttons.forEach(btn => {
+                if(btn.getAttribute('onclick').includes(savedTheme)) {
+                    btn.classList.add('active-theme');
+                }
+            });
+        };
+
+        // --- 3. Cloaking Logic (Retained from previous version) ---
+        function cloakSite() {
+            let win = window.open('about:blank', '_blank');
+            if (!win) { alert("Popup blocker is on! Allow popups to use the cloaker."); return; }
+            let doc = win.document;
+            doc.write('<title>Google Drive</title><link rel="icon" href="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png">');
+            doc.write('<body style="margin:0;padding:0;overflow:hidden;"><iframe src="' + window.location.href + '" style="width:100%;height:100%;border:none;"></iframe></body>');
+            doc.close();
+            window.location.replace('https://classroom.google.com'); 
+        }
+    </script>
 </body>
 </html>
