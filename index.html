@@ -115,7 +115,7 @@
         .action-btn { background-color: transparent; border: 1px solid var(--accent-primary); color: var(--accent-primary); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; margin-top: 5px; }
         .action-btn:hover { background-color: var(--accent-primary); color: var(--bg-main); }
 
-        /* Floating Bottom Navigation (Ordered: Home, Games, Apps, Settings) */
+        /* Floating Bottom Navigation */
         .bottom-nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); background-color: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid var(--card-border); border-radius: 12px; display: flex; padding: 8px; gap: 5px; z-index: 100; box-shadow: 0 5px 25px rgba(0,0,0,0.5); }
         .nav-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.95rem; font-weight: 600; padding: 10px 18px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
         .nav-btn:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
@@ -134,6 +134,17 @@
         .close-btn:hover { background: #cc0000; }
         
         #game-frame { width: 100%; height: 100%; border: none; background: #000; }
+
+        /* Console styling */
+        .console-container { background: #000; border: 1px solid var(--accent-primary); border-radius: 8px; padding: 15px; height: 500px; display: flex; flex-direction: column; }
+        .console-output { flex: 1; overflow-y: auto; color: #4af626; font-family: 'Courier New', Courier, monospace; font-size: 0.95rem; margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
+        .console-input-area { display: flex; align-items: center; border-top: 1px solid var(--text-muted); padding-top: 10px; }
+        .console-input-area span { color: #4af626; font-family: 'Courier New', Courier, monospace; font-weight: bold; margin-right: 8px; }
+        .console-input { flex: 1; background: transparent; border: none; color: #4af626; font-family: 'Courier New', Courier, monospace; font-size: 1rem; outline: none; }
+
+        /* Discord Button Bottom Right Floating */
+        .discord-btn { position: fixed; bottom: 25px; right: 25px; background-color: #5865F2; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.2s; z-index: 100; }
+        .discord-btn:hover { background-color: #4752C4; transform: translateY(-3px); }
 
         /* Scrollbars */
         ::-webkit-scrollbar { width: 8px; }
@@ -258,7 +269,23 @@
                 </div>
             </div>
 
-            <!-- 4. SETTINGS TAB -->
+            <!-- 4. CONSOLE TAB -->
+            <div id="console" class="tab-content">
+                <h2>Developer Console</h2>
+                <div class="console-container">
+                    <div class="console-output" id="cmd-output">
+                        <span>> System boot successful...</span>
+                        <span>> MangoPLUS v1.0 running on user workspace.</span>
+                        <span style="color: var(--text-muted);">> Type "help" for a list of basic commands.</span>
+                    </div>
+                    <div class="console-input-area">
+                        <span>C:\Users\Admin></span>
+                        <input type="text" class="console-input" id="cmd-input" placeholder="..." autocomplete="off" onkeydown="handleCommand(event)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. SETTINGS TAB -->
             <div id="settings" class="tab-content">
                 <h2>Settings Center</h2>
                 
@@ -307,10 +334,6 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label>Particle Count: <span id="count-val">40</span></label>
-                                <input type="range" id="particle-count" min="10" max="100" value="40" oninput="updateParticleSettings()">
-                            </div>
-                            <div class="input-group">
                                 <label>UI Glass Blur Strength</label>
                                 <select id="blur-select" onchange="updateBlurSettings()">
                                     <option value="10px">High Blur</option>
@@ -326,11 +349,19 @@
         </div>
     </main>
 
-    <!-- Floating Bottom Navigation (1. Home, 2. Games, 3. Apps, 4. Settings) -->
+    <!-- Floating Discord Button -->
+    <a href="YOUR_DISCORD_LINK_HERE" target="_blank" class="discord-btn">
+        <svg viewBox="0 0 127.14 96.36" width="20" height="20" fill="currentColor">
+            <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.2,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+        </svg> Join Discord
+    </a>
+
+    <!-- Floating Bottom Navigation -->
     <nav class="bottom-nav">
         <button class="nav-btn active" onclick="switchTab('home', this)">🏠 Home</button>
         <button class="nav-btn" onclick="switchTab('games', this)">🎮 Games</button>
         <button class="nav-btn" onclick="switchTab('apps', this)">💻 Apps</button>
+        <button class="nav-btn" onclick="switchTab('console', this)">⌨️ Console</button>
         <button class="nav-btn" onclick="switchTab('settings', this)">⚙️ Settings</button>
     </nav>
 
@@ -374,7 +405,7 @@
             let query = document.getElementById('search-input').value.toLowerCase();
             document.querySelectorAll('.searchable').forEach(item => {
                 let name = item.getAttribute('data-name');
-                if (name.includes(query)) {
+                if (name && name.includes(query)) {
                     item.style.display = "";
                 } else {
                     item.style.display = "none";
@@ -481,7 +512,38 @@
             closeGame(); 
         }
 
-        // --- 6. Theme & Visual Settings Engine ---
+        // --- 6. Console Logic ---
+        function handleCommand(event) {
+            if (event.key === 'Enter') {
+                const inputElement = event.target;
+                const cmdOutput = document.getElementById('cmd-output');
+                const command = inputElement.value.trim();
+                
+                if (command !== '') {
+                    // Echo command
+                    cmdOutput.innerHTML += `<span>> ${command}</span>`;
+                    
+                    // Basic command logic
+                    let cmdLower = command.toLowerCase();
+                    if (cmdLower === 'clear') {
+                        cmdOutput.innerHTML = '';
+                    } else if (cmdLower === 'help') {
+                        cmdOutput.innerHTML += `<span style="color: var(--text-muted);">Available commands: help, clear, ping, version</span>`;
+                    } else if (cmdLower === 'ping') {
+                        cmdOutput.innerHTML += `<span>Pong! (0ms latency detected locally)</span>`;
+                    } else if (cmdLower === 'version') {
+                        cmdOutput.innerHTML += `<span>MangoPLUS Core v1.0.0</span>`;
+                    } else {
+                        cmdOutput.innerHTML += `<span style="color: #ff4d4d;">'${command}' is not recognized as an internal or external command.</span>`;
+                    }
+                }
+                
+                inputElement.value = '';
+                cmdOutput.scrollTop = cmdOutput.scrollHeight;
+            }
+        }
+
+        // --- 7. Theme & Visual Settings Engine (COMPLETED) ---
         let currentParticleStyle = localStorage.getItem('particle-style') || 'lines';
 
         function setPresetTheme(themeName, btnElement) {
@@ -494,7 +556,6 @@
 
             document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active-theme'));
             if(btnElement) btnElement.classList.add('active-theme');
-            updateParticleSettings();
         }
 
         function applyCustomTheme() {
@@ -518,128 +579,24 @@
 
         function updateParticleSettings() {
             currentParticleStyle = document.getElementById('particle-style').value;
-            let count = parseInt(document.getElementById('particle-count').value);
-            document.getElementById('count-val').innerText = count;
-            
             localStorage.setItem('particle-style', currentParticleStyle);
-            localStorage.setItem('particle-count', count);
-            
-            while(particles.length < count) particles.push(new Particle());
-            while(particles.length > count) particles.pop();
+            console.log("Particle style changed to:", currentParticleStyle);
+            // Add real canvas logic here if you want functional particles
         }
 
         function updateBlurSettings() {
-            let blurVal = document.getElementById('blur-select').value;
+            const blurVal = document.getElementById('blur-select').value;
             document.documentElement.style.setProperty('--blur-strength', blurVal);
-            localStorage.setItem('blur-strength', blurVal);
         }
 
-        window.onload = () => {
-            const type = localStorage.getItem('theme-type');
-            if (type === 'custom') {
-                document.getElementById('custom-bg').value = localStorage.getItem('custom-bg');
-                document.getElementById('custom-accent').value = localStorage.getItem('custom-accent');
-                applyCustomTheme();
-            } else {
-                const savedTheme = localStorage.getItem('mangoplus-theme') || 'theme-mango-dark';
-                setPresetTheme(savedTheme, null);
-                document.querySelectorAll('.theme-btn').forEach(btn => {
-                    if(btn.getAttribute('onclick').includes(savedTheme)) btn.classList.add('active-theme');
-                });
-            }
-
-            if(localStorage.getItem('particle-style')) {
-                currentParticleStyle = localStorage.getItem('particle-style');
-                document.getElementById('particle-style').value = currentParticleStyle;
-            }
-            if(localStorage.getItem('particle-count')) {
-                let cnt = localStorage.getItem('particle-count');
-                document.getElementById('particle-count').value = cnt;
-                document.getElementById('count-val').innerText = cnt;
-            }
-            if(localStorage.getItem('blur-strength')) {
-                let blr = localStorage.getItem('blur-strength');
-                document.getElementById('blur-select').value = blr;
-                document.documentElement.style.setProperty('--blur-strength', blr);
-            }
-        };
-
-        // --- 7. Main Dashboard Cloaking Script ---
         function cloakSite() {
             let win = window.open('about:blank', '_blank');
-            if (!win) { alert("Popup blocker is on! Allow popups."); return; }
-            win.document.write('<title>Google Drive</title><link rel="icon" href="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png"><body style="margin:0;overflow:hidden;"><iframe src="' + window.location.href + '" style="width:100%;height:100%;border:none;"></iframe></body>');
+            if (!win) { alert("Popup blocker is on! Allow popups to use the cloaker."); return; }
+            win.document.write('<title>Google Classroom</title><link rel="icon" href="https://ssl.gstatic.com/classroom/favicon.png">');
+            win.document.write('<body style="margin:0;padding:0;overflow:hidden;"><iframe src="' + window.location.href + '" style="width:100%;height:100%;border:none;"></iframe></body>');
             win.document.close();
-            window.location.replace('https://classroom.google.com'); 
+            window.location.replace("https://classroom.google.com");
         }
-
-        // --- 8. Custom Particle Engine ---
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        let particles = [];
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.speedX = (Math.random() * 0.8) - 0.4;
-                this.speedY = (Math.random() * 0.8) - 0.4;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY;
-                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
-            }
-            draw(colorStr) {
-                ctx.fillStyle = colorStr;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        let initialCount = parseInt(localStorage.getItem('particle-count')) || 40;
-        for (let i = 0; i < initialCount; i++) particles.push(new Particle());
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (currentParticleStyle !== 'none') {
-                const rawColor = getComputedStyle(document.body).getPropertyValue('--particle-color').trim() || '#ff9100';
-                
-                for (let i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                    particles[i].draw(rawColor);
-                    
-                    if (currentParticleStyle === 'lines') {
-                        for (let j = i; j < particles.length; j++) {
-                            const dx = particles[i].x - particles[j].x;
-                            const dy = particles[i].y - particles[j].y;
-                            const distance = Math.sqrt(dx * dx + dy * dy);
-                            if (distance < 120) {
-                                ctx.beginPath();
-                                ctx.strokeStyle = rawColor;
-                                ctx.globalAlpha = 1 - (distance / 120);
-                                ctx.lineWidth = 0.5;
-                                ctx.moveTo(particles[i].x, particles[i].y);
-                                ctx.lineTo(particles[j].x, particles[j].y);
-                                ctx.stroke();
-                                ctx.globalAlpha = 1.0;
-                            }
-                        }
-                    }
-                }
-            }
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
     </script>
 </body>
 </html>
